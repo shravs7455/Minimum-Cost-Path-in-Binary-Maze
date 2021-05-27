@@ -1,0 +1,121 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define INF -10
+#define vi vector<vector<int>>
+
+int ROW,COL,CTR=1;
+vector<int> PATH_COST;
+
+//Function to compute cost of all Paths from bottom left (Source) to top right (Destination)
+void travel(vi grid, vi isValid, int i, int j, vector<int> path={})
+{
+    //Base Condition
+    if (i<0 || j<0 || i>=grid.size() || j>=grid[0].size() || isValid[i][j]==1 || grid[i][j]==INF)
+        return;
+        
+    //Printing path when destination is reached
+    if(i==0&&j==COL-1)
+    {
+        path.push_back(grid[i][j]); //Inserting the Destination cost
+        int total_cost=0;
+        cout<<"PATH "<<CTR<<"-> ";
+        for(int k=0;k<path.size();k++) //Printing the cost of individual positions in the Path 
+        {
+            cout<<path[k];
+            if(k!=path.size()-1) cout<<" + ";
+            total_cost+=path[k]; //Computing the cost of Path
+        }
+        cout<<" = "<<total_cost<<endl;
+        PATH_COST.push_back(total_cost); //Storing cost of path traversed
+        CTR++;
+        return;
+    }
+    
+    isValid[i][j]=1; //Marking path as traversed
+    path.push_back(grid[i][j]); //Storing the path
+    
+    //Recursive call
+    travel(grid,isValid,i,j+1,path); //Moving right
+    travel(grid,isValid,i+1,j,path); //Moving down
+    travel(grid,isValid,i-1,j,path); //Moving up
+    travel(grid,isValid,i,j-1,path); //Moving left
+    
+    path.pop_back(); 
+    isValid[i][j]=0; //Marking path to traverse another path
+}
+
+//Main function
+int main()
+{
+    cout<<"Enter the number of ROWS in the maze: ";
+    cin>>ROW;
+    cout<<"Enter the number of COLUMNS in the maze: ";
+    cin>>COL;
+    cout<<"Construct the maze. (1->Wall, 0->Path)"<<endl;
+    
+    int maze[ROW][COL],pos_cost;
+    vector<int> temp;
+    vi cost;
+    
+    //Accepting input for Binary Maze and Cost of each position
+    for(int i=0;i<ROW;i++)
+    {
+        for(int j=0;j<COL;j++)
+        {
+            cout<<"Row: "<<i+1<<" Col: "<<j+1<<": ";
+            cin>>maze[i][j];
+            if(maze[i][j]==1) temp.push_back(INF);
+            else if(maze[i][j]==0)
+            {
+                cout<<"Enter cost for this position: ";
+                cin>>pos_cost;
+                temp.push_back(pos_cost);
+            }
+            else
+            {
+                cout<<"Incorrect input. Replaced with wall.\n";
+                maze[i][j]=1;
+                temp.push_back(INF);
+            }
+        }
+        cost.push_back(temp);
+        temp.clear();
+    }
+    
+    //Displaying Binary Maze
+    cout<<"\nGiven Maze:\n";
+    for(int i=0;i<ROW;i++)
+    {
+        for(int j=0;j<COL;j++)
+        {
+            cout<<maze[i][j]<<"\t";
+        }
+        cout<<endl;
+    }
+    
+    //Displaying Cost alloted to each position
+    cout<<"\nGiven Cost of each location:\n";
+    for(int i=0;i<ROW;i++)
+    {
+        for(int j=0;j<COL;j++)
+        {
+            cout<<cost[i][j]<<"\t";
+        }
+        cout<<endl;
+    }
+    
+    //Using fill constructor to initialize 2-D vector with 0
+    vi isValid(ROW, vector<int>(COL,0)); 
+    
+    cout<<"\nComputing cost from Source to Destination... "<<endl;
+    travel(cost,isValid,ROW-1,0); //Calling travel function
+    
+    if(PATH_COST.size()==0) 
+        cout<<"No path available.";
+    else 
+        cout << "\nMinimum cost of path from Source to Destination is: "
+                    <<*min_element(PATH_COST.begin(), PATH_COST.end());
+    
+    return 0;
+}

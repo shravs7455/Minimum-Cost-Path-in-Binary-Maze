@@ -114,8 +114,7 @@ int main()
     if(PATH_COST.size()==0) 
         cout<<"No path available.";
     else 
-        cout << "\nMinimum cost of path from Source to Destination is: "
-                    <<*min_element(PATH_COST.begin(), PATH_COST.end());
+        cout << "\nMinimum cost of path from Source to Destination is: "<<*min_element(PATH_COST.begin(), PATH_COST.end());
     
     return 0;
 }
